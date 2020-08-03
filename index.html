@@ -27,6 +27,16 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 20px;
+}
+
+svg {
+	cursor: crosshair;
+	flex-shrink: 0;
+}
+
+p {
+	word-wrap: break-word;
 }
 </style>
 </head>
@@ -34,9 +44,27 @@ body {
 <svg style="border: 1px solid black"></svg>
 
 <div id="side">
-	<p></p>
+	<div>
+		<p>
+			Over the course of 2020 the US has seen a growing concern over the Novel Corona Virus 2019 and the infection of said virus. The US saw its first case of COVID19 in February and watched as the numbers of infections and deaths exponentially grew culminating in what some call the first wave. 
+		</p>
+		
+		<p>
+			To the left we have plotted the percentage of polled US citizens that answered one of four different ways to being asked about their concern of being infected by COVID19.
+		</p>
+		<p>The options on the poll were as follows:</p>
+		<ul>
+			<li style="color: red">Very Concerned</li>
+			<li style="color: orange">Somewhat Concerned</li>
+			<li style="color: purple">Not Very Concerned</li>
+			<li style="color: blue">Not At All Concerned</li>
+		</ul>
+		<p>
+			To give context we have also plotted events represnted by vertical dotted lines with COVID incidence rate and death milestones. Each event and data point can be hovered over to get more info.
+		</p>
+	</div>
 	<span>
-		<a href="">Back</a>
+		<a href="" style="background-color: grey;">Back</a>
 		<a href="second.html">Forward</a>
 	</span>
 </div>

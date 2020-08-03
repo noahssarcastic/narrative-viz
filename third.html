@@ -27,6 +27,16 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 20px;
+}
+
+svg {
+	cursor: crosshair;
+	flex-shrink: 0;
+}
+
+p {
+	word-wrap: break-word;
 }
 </style>
 </head>
@@ -34,10 +44,27 @@ body {
 <svg style="border: 1px solid black"></svg>
 
 <div id="side">
-	<p></p>
+	<div>
+		<p>
+			It is difficult to argue that the President's behavior during the pandemic has been less than presidential and it is important to first hold offending parties accountable in order to make progress towards a better pandemic response. Unfortunately COVID19 has been made a partisan issue. It is not easy to say all why this has come to pass, but the data is hard to ignore. Despite obvious faults in the President's pandemic response the public approval along party lines has barely changed. Until we are able to come together as a country, people will continue to die.
+		</p>
+		
+		<p>
+			To the left we have plotted the percentage of polled US citizens on their approval of the President's pandemic response. The data has this time been grouped along party lines.
+		</p>
+		<p>The options on the poll were as follows:</p>
+		<ul>
+			<li style="color: red">Republican Approval</li>
+			<li style="color: orange">Independent Approval</li>
+			<li style="color: blue">Democrat Approval</li>
+		</ul>
+		<p>
+			This time we have compiled both types of events.
+		</p>
+	</div>
 	<span>
 		<a href="second.html">Back</a>
-		<a href="">Forward</a>
+		<a href="" style="background-color: grey;">Forward</a>
 	</span>
 </div>
 <script>
@@ -163,14 +190,14 @@ d3.csv(
 	    tooltip.style("opacity",0);
 	  });
 	  
-	let independant = graph.append("g");
-	independant.append('path')
+	let independent = graph.append("g");
+	independent.append('path')
       .attr('d', d3.line()
         .x(d => x(new Date(d.date)))
         .y(d => y(d.approve))(ind_data))
       .attr('stroke', 'orange')
       .attr('fill', 'none');
-	independant.selectAll('circle').data(ind_data).enter().append("circle")
+	independent.selectAll('circle').data(ind_data).enter().append("circle")
 	  .attr('cx', (d,i) => x(new Date(d.date)))
 	  .attr('cy', (d,i) => y(d.approve))
 	  .attr('r',4)
@@ -180,13 +207,13 @@ d3.csv(
 		tooltip.style("opacity",1)
 		  .style("left",(d3.event.pageX + 20)+"px")
 		  .style("top",(d3.event.pageY + 20)+"px")
-		  .html(d.date + " Independants Approve: " + d.approve + "%");
+		  .html(d.date + " Independents Approve: " + d.approve + "%");
 	  })
       .on("mouseout", function(){
 	    tooltip.style("opacity",0);
 	  });
 }).catch(() => {
-  console.log("error loading independant file");
+  console.log("error loading independent file");
 });
 }).catch(() => {
   console.log("error loading republican file");
