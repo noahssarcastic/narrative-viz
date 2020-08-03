@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Page Title</title>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<style>
+a:link, a:visited {
+  background-color: #f44336;
+  color: white;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  background-color: red;
+}
+
+body {
+  display: flex;
+  justify-content: space-around;
+}
+
+#side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+</style>
+</head>
+<body>
+<svg style="border: 1px solid black"></svg>
+
+<div id="side">
+	<p></p>
+	<span>
+		<a href="second.html">Back</a>
+		<a href="">Forward</a>
+	</span>
+</div>
+<script>
+d3.csv(
+	"https://raw.githubusercontent.com/noahssarcastic/narrative-viz/master/covid_approval_democrat.csv") 
+.then(dem_data => {d3.csv(
+	"https://raw.githubusercontent.com/noahssarcastic/narrative-viz/master/covid_approval_republican.csv"
+).then(rep_data => {d3.csv(
+	"https://raw.githubusercontent.com/noahssarcastic/narrative-viz/master/covid_approval_independant.csv"
+).then(ind_data => {
+	let width = 1500;
+	let height = 800;
+	
+    let svg = d3.select("svg")
+	  .attr("width",width+100)
+	  .attr("height",height+100);
+	
+	let tooltip = d3.select("body")
+	  .append("div")
+	  .style("opacity",0)
+	  .style("position","absolute")
+	  .style("background-color","white")
+	  .style("border","black solid 1px")
+	  .style("padding","20px");
+	
+	let x = d3.scaleTime()
+	  .domain([new Date(2020,1,10),new Date(2020,7,5)])
+	  .range([0,width]);
+	let y = d3.scaleLinear()
+	  .domain([0,100])
+	  .range([height,0]);
+	  
+	let left = svg.append("g").attr("transform","translate(50,50)").call(d3.axisLeft(y));
+	let bottom = svg.append("g").attr("transform","translate(50,"+(height + 50)+")").call(d3.axisBottom(x));
+	  
+	let graph = svg.append("g")
+	  .attr("width",width)
+	  .attr("height",height)
+	  .attr("transform","translate(50,50)");
+	  
+	  
+	function addEvent(group, year, month, day, html) {
+	  group.append("line")
+		.style("stroke", "black")
+		.style("stroke-width", "2")
+		.style("stroke-dasharray", ("5, 5"))
+		.attr("x1", x(new Date(year, month-1 , day)))
+		.attr("y1", y(0))
+		.attr("x2", x(new Date(year, month-1 , day)))
+		.attr("y2", y(100))
+		.on("mouseover", function(){
+			tooltip.style("opacity",1)
+				.style("left",(d3.event.pageX + 20)+"px")
+				.style("top",(d3.event.pageY + 20)+"px")
+				.html(html);
+		})
+		.on("mouseout", function(){
+			tooltip.style("opacity",0);
+		});
+	}
+	
+	addEvent(graph, 2020, 3, 10, "<p>3/10/2020: US COVID19 cases pass 1000</p><p>3/11/2020: WHO designates a global state of pandemic</p><p>3/11/2020: WHO designates a worldwide state of pandemic</p>");
+	addEvent(graph, 2020, 3, 26, "<p>3/25/2020: US COVID19 deaths pass 1,000</p><p>3/27/2020: US COVID19 cases pass 100,000</p>");
+	addEvent(graph, 2020, 4, 28, "4/28/2020: US COVID19 cases pass 1,000,000");
+	addEvent(graph, 2020, 5, 28, "5/28/2020: US COVID19 deaths pass 100,000");
+	addEvent(graph, 2020, 6, 10, "6/10/2020: US COVID19 cases pass 2,000,000");
+	addEvent(graph, 2020, 7, 7, "7/7/2020: US COVID19 cases pass 3,000,000");
+	addEvent(graph, 2020, 7, 23, "7/23/2020: US COVID19 cases pass 4,000,000");
+	addEvent(graph, 2020, 7, 29, "<p>7/28/2020: POTUS doubles down on claim of hydroxychloroquine's effectiveness against COVID19</p><p>7/29/2020: US COVID19 deaths pass 150,000</p>");
+
+	addEvent(graph,2020,3,14,"3/14/2020: POTUS tweets about COVID19 for the first time");
+	addEvent(graph,2020,3,21,"3/21/2020: POTUS recommends immediate adoption of the use of hydroxychloroquine for COVID19 treatment");
+	addEvent(graph,2020,4,23,"4/23/2020: POTUS makes comments suggesting injecting disinfectant as COVID19 treatment.");
+	addEvent(graph,2020,6,2,"6/2/2020: [Report] Lupus patients face shortages of necessary drug hydroxychloroquine");
+	addEvent(graph,2020,6,15,"6/15/2020: FDA revokes emergency use of hydroxychloroquine");
+	addEvent(graph,2020,7,7,"<p>7/7/2020: POTUS optimistically tweets about US COVID cases plunging from previous peak</p><p>7/8/2020: COVID cases reach new daily peak at 62,000; two more daily records are set within the next ten days</p>");
+	addEvent(graph,2020,7,11,"7/11/2020: POTUS wears mask publicly for the first time");
+	
+  
+	let democrat = graph.append("g");
+	democrat.append('path')
+      .attr('d', d3.line()
+        .x(d => x(new Date(d.date)))
+        .y(d => y(d.approve))(dem_data))
+      .attr('stroke', 'blue')
+      .attr('fill', 'none');
+	democrat.selectAll('circle').data(dem_data).enter().append("circle")
+	  .attr('cx', (d,i) => x(new Date(d.date)))
+	  .attr('cy', (d,i) => y(d.approve))
+	  .attr('r',4)
+	  .attr('stroke','blue')
+	  .attr('fill','white')
+	  .on("mouseover", function(d, i){
+		tooltip.style("opacity",1)
+		  .style("left",(d3.event.pageX + 20)+"px")
+		  .style("top",(d3.event.pageY + 20)+"px")
+		  .html(d.date + " Democrats Approve: " + d.approve + "%");
+	  })
+      .on("mouseout", function(){
+	    tooltip.style("opacity",0);
+	  });
+	  
+	let republican = graph.append("g");
+	republican.append('path')
+      .attr('d', d3.line()
+        .x(d => x(new Date(d.date)))
+        .y(d => y(d.approve))(rep_data))
+      .attr('stroke', 'red')
+      .attr('fill', 'none');
+	republican.selectAll('circle').data(rep_data).enter().append("circle")
+	  .attr('cx', (d,i) => x(new Date(d.date)))
+	  .attr('cy', (d,i) => y(d.approve))
+	  .attr('r',4)
+	  .attr('stroke','red')
+	  .attr('fill','white')
+	  .on("mouseover", function(d, i){
+		tooltip.style("opacity",1)
+		  .style("left",(d3.event.pageX + 20)+"px")
+		  .style("top",(d3.event.pageY + 20)+"px")
+		  .html(d.date + " Republicans Approve: " + d.approve + "%");
+	  })
+      .on("mouseout", function(){
+	    tooltip.style("opacity",0);
+	  });
+	  
+	let independant = graph.append("g");
+	independant.append('path')
+      .attr('d', d3.line()
+        .x(d => x(new Date(d.date)))
+        .y(d => y(d.approve))(ind_data))
+      .attr('stroke', 'orange')
+      .attr('fill', 'none');
+	independant.selectAll('circle').data(ind_data).enter().append("circle")
+	  .attr('cx', (d,i) => x(new Date(d.date)))
+	  .attr('cy', (d,i) => y(d.approve))
+	  .attr('r',4)
+	  .attr('stroke','orange')
+	  .attr('fill','white')
+	  .on("mouseover", function(d, i){
+		tooltip.style("opacity",1)
+		  .style("left",(d3.event.pageX + 20)+"px")
+		  .style("top",(d3.event.pageY + 20)+"px")
+		  .html(d.date + " Independants Approve: " + d.approve + "%");
+	  })
+      .on("mouseout", function(){
+	    tooltip.style("opacity",0);
+	  });
+}).catch(() => {
+  console.log("error loading independant file");
+});
+}).catch(() => {
+  console.log("error loading republican file");
+});
+}).catch(() => {
+  console.log("error loading democrat file");
+});
+</script>
+
+</body>
+</html> 

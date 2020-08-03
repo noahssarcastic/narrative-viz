@@ -4,9 +4,42 @@
 <meta charset="UTF-8">
 <title>Page Title</title>
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<style>
+a:link, a:visited {
+  background-color: #f44336;
+  color: white;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  background-color: red;
+}
+
+body {
+  display: flex;
+  justify-content: space-around;
+}
+
+#side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+</style>
 </head>
 <body>
 <svg style="border: 1px solid black"></svg>
+
+<div id="side">
+	<p></p>
+	<span>
+		<a href="">Back</a>
+		<a href="second.html">Forward</a>
+	</span>
+</div>
 <script>
 data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/master/covid_concern.csv") 
 .then( data => {

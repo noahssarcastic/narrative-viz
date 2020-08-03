@@ -4,9 +4,42 @@
 <meta charset="UTF-8">
 <title>Page Title</title>
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<style>
+a:link, a:visited {
+  background-color: #f44336;
+  color: white;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  background-color: red;
+}
+
+body {
+  display: flex;
+  justify-content: space-around;
+}
+
+#side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+</style>
 </head>
 <body>
 <svg style="border: 1px solid black"></svg>
+
+<div id="side">
+	<p></p>
+	<span>
+		<a href="index.html">Back</a>
+		<a href="third.html">Forward</a>
+	</span>
+</div>
 <script>
 data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/master/covid_approval_all.csv") 
 .then( data => {
@@ -29,7 +62,7 @@ data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/ma
 	  .domain([new Date(2020,1,10),new Date(2020,7,5)])
 	  .range([0,width]);
 	let y = d3.scaleLinear()
-	  .domain([0,47])
+	  .domain([0,80])
 	  .range([height,0]);
 	  
 	let left = svg.append("g").attr("transform","translate(50,50)").call(d3.axisLeft(y));
@@ -49,7 +82,7 @@ data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/ma
 		.attr("x1", x(new Date(year, month-1 , day)))
 		.attr("y1", y(0))
 		.attr("x2", x(new Date(year, month-1 , day)))
-		.attr("y2", y(47))
+		.attr("y2", y(80))
 		.on("mouseover", function(){
 			tooltip.style("opacity",1)
 				.style("left",(d3.event.pageX + 20)+"px")
@@ -61,26 +94,50 @@ data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/ma
 		});
 	}
 	
-	addEvent(graph, 2020, 3, 10, "<p>3/10/2020: US COVID19 cases pass 1000</p><p>3/11/2020: WHO designates a global state of pandemic</p>");
-	addEvent(graph, 2020, 3, 26, "<p>3/25/2020: US COVID19 deaths pass 1,000</p><p>3/27/2020: US COVID19 cases pass 100,000</p>");
-	addEvent(graph, 2020, 4, 28, "4/28/2020: US COVID19 cases pass 1,000,000");
-	addEvent(graph, 2020, 5, 28, "5/28/2020: US COVID19 deaths pass 100,000");
-	addEvent(graph, 2020, 6, 10, "6/10/2020: US COVID19 cases pass 2,000,000");
-	addEvent(graph, 2020, 7, 7, "7/7/2020: US COVID19 cases pass 3,000,000");
-	addEvent(graph, 2020, 7, 23, "7/23/2020: US COVID19 cases pass 4,000,000");
-	addEvent(graph, 2020, 7, 29, "7/29/2020: US COVID19 deaths pass 150,000");
+	addEvent(graph,2020,3,11,"3/11/2020: WHO designates a worldwide state of pandemic");
+	addEvent(graph,2020,3,14,"3/14/2020: POTUS tweets about COVID19 for the first time");
+	addEvent(graph,2020,3,21,"3/21/2020: POTUS recommends immediate adoption of the use of hydroxychloroquine for COVID19 treatment");
+	addEvent(graph,2020,4,23,"4/23/2020: POTUS makes comments suggesting injecting disinfectant as COVID19 treatment.");
+	addEvent(graph,2020,6,2,"6/2/2020: [Report] Lupus patients face shortages of necessary drug hydroxychloroquine");
+	addEvent(graph,2020,6,15,"6/15/2020: FDA revokes emergency use of hydroxychloroquine");
+	addEvent(graph,2020,7,7,"<p>7/7/2020: POTUS optimistically tweets about US COVID cases plunging from previous peak</p><p>7/8/2020: COVID cases reach new daily peak at 62,000; two more daily records are set within the next ten days</p>");
+	addEvent(graph,2020,7,11,"7/11/2020: POTUS wears mask publicly for the first time");
+    addEvent(graph,2020,7,28,"7/28/2020: POTUS doubles down on claim of hydroxychloroquine's effectiveness against COVID19");
+	
   
-  
-	let very = graph.append("g");
-	very.append('path')
+	let approve = graph.append("g");
+	approve.append('path')
       .attr('d', d3.line()
         .x(d => x(new Date(d.date)))
-        .y(d => y(d.very))(data))
+        .y(d => y(d.approve))(data))
+      .attr('stroke', 'green')
+      .attr('fill', 'none');
+	approve.selectAll('circle').data(data).enter().append("circle")
+	  .attr('cx', (d,i) => x(new Date(d.date)))
+	  .attr('cy', (d,i) => y(d.approve))
+	  .attr('r',4)
+	  .attr('stroke','green')
+	  .attr('fill','white')
+	  .on("mouseover", function(d, i){
+		tooltip.style("opacity",1)
+		  .style("left",(d3.event.pageX + 20)+"px")
+		  .style("top",(d3.event.pageY + 20)+"px")
+		  .html(d.date + " Approve: " + d.approve + "%");
+	  })
+      .on("mouseout", function(){
+	    tooltip.style("opacity",0);
+	  });
+	  
+	let disapprove = graph.append("g");
+	disapprove.append('path')
+      .attr('d', d3.line()
+        .x(d => x(new Date(d.date)))
+        .y(d => y(d.disapprove))(data))
       .attr('stroke', 'red')
       .attr('fill', 'none');
-	very.selectAll('circle').data(data).enter().append("circle")
+	disapprove.selectAll('circle').data(data).enter().append("circle")
 	  .attr('cx', (d,i) => x(new Date(d.date)))
-	  .attr('cy', (d,i) => y(d.very))
+	  .attr('cy', (d,i) => y(d.disapprove))
 	  .attr('r',4)
 	  .attr('stroke','red')
 	  .attr('fill','white')
@@ -88,76 +145,7 @@ data = d3.csv("https://raw.githubusercontent.com/noahssarcastic/narrative-viz/ma
 		tooltip.style("opacity",1)
 		  .style("left",(d3.event.pageX + 20)+"px")
 		  .style("top",(d3.event.pageY + 20)+"px")
-		  .html(d.date + " Very Concerned: " + d.very + "%");
-	  })
-      .on("mouseout", function(){
-	    tooltip.style("opacity",0);
-	  });
-		
-	let somewhat = graph.append("g");
-	somewhat.append('path')
-      .attr('d', d3.line()
-        .x(d => x(new Date(d.date)))
-        .y(d => y(d.somewhat))(data))
-      .attr('stroke', 'orange')
-      .attr('fill', 'none');
-	somewhat.selectAll('circle').data(data).enter().append("circle")
-	  .attr('cx', (d,i) => x(new Date(d.date)))
-	  .attr('cy', (d,i) => y(d.somewhat))
-	  .attr('r',4)
-	  .attr('stroke','orange')
-	  .attr('fill','white')
-	  .on("mouseover", function(d, i){
-		tooltip.style("opacity",1)
-		  .style("left",(d3.event.pageX + 20)+"px")
-		  .style("top",(d3.event.pageY + 20)+"px")
-		  .html(d.date + " Somewhat Concerned: " + d.somewhat + "%");
-	  })
-      .on("mouseout", function(){
-	    tooltip.style("opacity",0);
-	  });
-	  
-	let not_very = graph.append("g");
-	not_very.append('path')
-      .attr('d', d3.line()
-        .x(d => x(new Date(d.date)))
-        .y(d => y(d.not_very))(data))
-      .attr('stroke', 'purple')
-      .attr('fill', 'none');
-	not_very.selectAll('circle').data(data).enter().append("circle")
-	  .attr('cx', (d,i) => x(new Date(d.date)))
-	  .attr('cy', (d,i) => y(d.not_very))
-	  .attr('r',4)
-	  .attr('stroke','purple')
-	  .attr('fill','white')
-	  .on("mouseover", function(d, i){
-		tooltip.style("opacity",1)
-		  .style("left",(d3.event.pageX + 20)+"px")
-		  .style("top",(d3.event.pageY + 20)+"px")
-		  .html(d.date + " Not Very Concerned: " + d.not_very + "%");
-	  })
-      .on("mouseout", function(){
-	    tooltip.style("opacity",0);
-	  });
-	  
-	let not_at_all = graph.append("g");
-	not_at_all.append('path')
-      .attr('d', d3.line()
-        .x(d => x(new Date(d.date)))
-        .y(d => y(d.not_at_all))(data))
-      .attr('stroke', 'blue')
-      .attr('fill', 'none');
-	not_at_all.selectAll('circle').data(data).enter().append("circle")
-	  .attr('cx', (d,i) => x(new Date(d.date)))
-	  .attr('cy', (d,i) => y(d.not_at_all))
-	  .attr('r',4)
-	  .attr('stroke','blue')
-	  .attr('fill','white')
-	  .on("mouseover", function(d, i){
-		tooltip.style("opacity",1)
-		  .style("left",(d3.event.pageX + 20)+"px")
-		  .style("top",(d3.event.pageY + 20)+"px")
-		  .html(d.date + " Not At All Concerned: " + d.not_at_all + "%");
+		  .html(d.date + " Disapprove: " + d.disapprove + "%");
 	  })
       .on("mouseout", function(){
 	    tooltip.style("opacity",0);
